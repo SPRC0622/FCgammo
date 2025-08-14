@@ -28,3 +28,8 @@ npm-debug.log*
 # Temporary files
 *.tmp
 temp/
+
+# 불필요한 파일들
+FC온라인_타이머_패키지/
+build-icon.png
+선수목록.csv
