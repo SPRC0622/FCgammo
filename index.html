@@ -396,7 +396,6 @@
                 <div class="buttons">
                     <button class="start-btn" id="startBtn" onclick="startTimer(11)">11분 시작</button>
                     <button class="stop-btn" id="stopBtn" onclick="stopTimer()" style="display:none;">정지</button>
-                    <button class="reset-btn" onclick="resetToEleven()">11분으로 리셋</button>
                 </div>
                 
                 <div class="buttons">
@@ -596,16 +595,6 @@
             }
             
             updateDisplay();
-        }
-
-        // 11분으로 리셋
-        function resetToEleven() {
-            if (isRunning) {
-                stopTimer();
-            }
-            timeLeft = 660; // 11분
-            updateDisplay();
-            document.getElementById('status').textContent = '11분으로 리셋됨 - 시작 버튼을 눌러주세요';
         }
 
         // 시간 추가 또는 새로 시작

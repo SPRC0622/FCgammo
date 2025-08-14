@@ -47,8 +47,9 @@ function createWindow() {
 
 function createTray() {
   // 트레이 아이콘 생성
-  // 아이콘 없이 트레이 생성 (기본 아이콘 사용)
-  tray = new Tray(nativeImage.createEmpty());
+  // 트레이 아이콘 설정
+  const trayIcon = nativeImage.createFromPath(path.join(__dirname, 'icon.png'));
+  tray = new Tray(trayIcon);
 
   const contextMenu = Menu.buildFromTemplate([
     {
