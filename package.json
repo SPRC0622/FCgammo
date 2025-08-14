@@ -9,12 +9,17 @@
     "build": "electron-builder",
     "dist": "electron-builder --publish=always"
   },
-  "keywords": ["fc-online", "timer", "supervisor", "transfer-market"],
+  "keywords": [
+    "fc-online",
+    "timer",
+    "supervisor",
+    "transfer-market"
+  ],
   "author": "SPRC0622",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^27.0.0",
-    "electron-builder": "^24.6.4"
+    "electron": "^27.3.11",
+    "electron-builder": "^24.13.3"
   },
   "build": {
     "appId": "com.sprc0622.fcgammo",
@@ -26,27 +31,26 @@
       "main.js",
       "index.html",
       "preload.js",
-      "icon.ico",
       "assets/**/*"
     ],
     "win": {
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64", "ia32"]
+          "arch": [
+            "x64",
+            "ia32"
+          ]
         },
         {
           "target": "portable"
         }
-      ],
-      "icon": "icon.ico"
+      ]
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "language": "1042",
-      "installerIcon": "icon.ico",
-      "uninstallerIcon": "icon.ico",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true
     },

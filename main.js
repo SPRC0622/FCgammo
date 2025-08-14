@@ -19,7 +19,6 @@ function createWindow() {
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js')
     },
-    icon: path.join(__dirname, 'icon.ico'),
     title: 'FC온라인 타이머'
   });
 
@@ -36,7 +35,6 @@ function createWindow() {
         tray.displayBalloon({
           title: 'FC온라인 타이머',
           content: '프로그램이 트레이에서 계속 실행됩니다.',
-          icon: path.join(__dirname, 'icon.ico')
         });
       }
     }
@@ -49,8 +47,8 @@ function createWindow() {
 
 function createTray() {
   // 트레이 아이콘 생성
-  const iconPath = path.join(__dirname, 'icon.ico');
-  tray = new Tray(iconPath);
+  // 아이콘 없이 트레이 생성 (기본 아이콘 사용)
+  tray = new Tray(nativeImage.createEmpty());
 
   const contextMenu = Menu.buildFromTemplate([
     {
@@ -169,8 +167,7 @@ function startSupervisorTimer(minutes) {
       const notification = new Notification({
         title: '🚨 감독모드 실행 시간!',
         body: 'FC온라인에서 감독모드를 실행하세요',
-        icon: path.join(__dirname, 'icon.ico'),
-        urgency: 'critical',
+            urgency: 'critical',
         timeoutType: 'never'
       });
       
