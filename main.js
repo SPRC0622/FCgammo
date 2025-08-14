@@ -7,7 +7,7 @@ let isQuitting = false;
 
 // 타이머 상태 저장
 let supervisorTimer = null;
-let supervisorTimeLeft = 600; // 10분
+let supervisorTimeLeft = 660; // 11분
 let isTimerRunning = false;
 
 function createWindow() {
@@ -64,9 +64,9 @@ function createTray() {
       label: '감독모드 타이머',
       submenu: [
         {
-          label: '10분 시작',
+          label: '11분 시작',
           click: () => {
-            startSupervisorTimer(10);
+            startSupervisorTimer(11);
           }
         },
         {
@@ -138,7 +138,7 @@ function startSupervisorTimer(minutes) {
   }
   
   if (supervisorTimeLeft <= 0) {
-    supervisorTimeLeft = 600; // 10분
+    supervisorTimeLeft = 660; // 11분
   }
   
   isTimerRunning = true;

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FC온라인 감독모드 & 이적시장 타이머 v3.0</title>
+    <title>FC온라인 감독모드 & 이적시장 타이머 v1.1.1</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -196,6 +196,12 @@
             border-left-color: #ffc107;
         }
         
+        .player-item.notification-enabled {
+            background: linear-gradient(135deg, #f3f4ff 0%, #e8ebff 100%);
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+        
         .player-info {
             flex: 1;
             display: flex;
@@ -383,14 +389,14 @@
             <div class="timer-section" id="supervisorSection">
                 <div class="title">감독모드 타이머 v3.0</div>
                 
-                <div class="timer-display" id="timerDisplay">10:00</div>
+                <div class="timer-display" id="timerDisplay">11:00</div>
                 
-                <div class="status" id="status">준비 상태 - 시작 버튼을 눌러 10분 타이머를 시작하세요</div>
+                <div class="status" id="status">준비 상태 - 시작 버튼을 눌러 11분 타이머를 시작하세요</div>
                 
                 <div class="buttons">
-                    <button class="start-btn" id="startBtn" onclick="startTimer(10)">10분 시작</button>
+                    <button class="start-btn" id="startBtn" onclick="startTimer(11)">11분 시작</button>
                     <button class="stop-btn" id="stopBtn" onclick="stopTimer()" style="display:none;">정지</button>
-                    <button class="reset-btn" onclick="resetToTen()">10분으로 리셋</button>
+                    <button class="reset-btn" onclick="resetToEleven()">11분으로 리셋</button>
                 </div>
                 
                 <div class="buttons">
@@ -400,7 +406,7 @@
 
                 <div class="timer-info">
                     💡 <strong>사용법:</strong><br>
-                    • <strong>10분 시작</strong>: 기본 10분 타이머 시작<br>
+                    • <strong>11분 시작</strong>: 기본 11분 타이머 시작<br>
                     • <strong>+5분/+1분</strong>: 타이머 정지 상태면 해당 시간으로 시작, 진행 중이면 시간 추가<br>
                     • <strong>알림 후</strong>: 자동으로 정지 상태 → 다시 시작하려면 버튼 클릭<br>
                     • <strong>연장전</strong>: 알림 울린 후 +5분 누르면 5분 타이머 시작
@@ -409,7 +415,7 @@
             
             <!-- 이적시장 알림 섹션 -->
             <div class="transfer-section" id="transferSection">
-                <div class="title">이적시장 갱신 알림 v3.0</div>
+                <div class="title">이적시장 갱신 알림 v1.1.1</div>
                 
                 <div class="file-upload">
                     <div>📁 선수목록.csv 파일을 업로드하거나 직접 추가하세요</div>
@@ -424,8 +430,15 @@
                     <button class="download-btn" onclick="downloadCSV()">💾 CSV 다운로드</button>
                 </div>
                 
-                <!-- 선수 검색 -->
+                <!-- 필터 및 검색 -->
                 <div style="margin: 20px 0; text-align: center;">
+                    <div style="margin-bottom: 15px;">
+                        <button id="filterToggle" onclick="toggleFilter()" 
+                                style="padding: 10px 20px; border-radius: 5px; border: none; background: #667eea; color: white; font-weight: bold; cursor: pointer; margin-right: 10px;">
+                            📌 알림 설정된 선수만 보기
+                        </button>
+                        <span id="notificationCount" style="color: #667eea; font-weight: bold;">알림 활성: 0/0명</span>
+                    </div>
                     <input type="text" id="playerSearch" placeholder="🔍 선수명 또는 시즌 검색..." 
                            style="padding: 10px; width: 300px; border-radius: 5px; border: 1px solid #ddd; font-size: 14px;"
                            onkeyup="searchPlayers()">
@@ -481,12 +494,14 @@
         const isElectron = typeof window.electronAPI !== 'undefined';
         
         // 전역 변수
-        let timeLeft = 600; // 10분 = 600초
+        let timeLeft = 660; // 11분 = 660초
         let timerId = null;
         let isRunning = false;
         let players = [];
         let transferTimers = [];
         let editingIndex = -1;
+        let notificationSettings = JSON.parse(localStorage.getItem('notificationSettings') || '{}');
+        let showOnlyEnabled = true; // 기본값: 알림 설정된 선수만 보기
         
         // 현재 시간 업데이트
         function updateCurrentTime() {
@@ -533,7 +548,7 @@
             
             // 시간이 0이면 10분으로 설정
             if (timeLeft <= 0) {
-                timeLeft = 600;
+                timeLeft = 660;
             }
             
             isRunning = true;
@@ -583,14 +598,14 @@
             updateDisplay();
         }
 
-        // 10분으로 리셋
-        function resetToTen() {
+        // 11분으로 리셋
+        function resetToEleven() {
             if (isRunning) {
                 stopTimer();
             }
-            timeLeft = 600; // 10분
+            timeLeft = 660; // 11분
             updateDisplay();
-            document.getElementById('status').textContent = '10분으로 리셋됨 - 시작 버튼을 눌러주세요';
+            document.getElementById('status').textContent = '11분으로 리셋됨 - 시작 버튼을 눌러주세요';
         }
 
         // 시간 추가 또는 새로 시작
@@ -689,20 +704,48 @@
         function displayPlayers(playersToShow = players) {
             const playerList = document.getElementById('playerList');
             
-            if (playersToShow.length === 0) {
+            // 알림 카운터 업데이트
+            updateNotificationCount();
+            
+            // 필터 적용
+            let filteredPlayers = playersToShow;
+            if (showOnlyEnabled) {
+                filteredPlayers = playersToShow.filter(player => {
+                    const key = `${player.season}_${player.name}`;
+                    return notificationSettings[key] === true;
+                });
+            }
+            
+            if (filteredPlayers.length === 0) {
                 if (players.length === 0) {
                     playerList.innerHTML = '<div class="no-players">선수를 추가하거나 CSV 파일을 업로드하세요</div>';
+                } else if (showOnlyEnabled) {
+                    playerList.innerHTML = '<div class="no-players">알림이 설정된 선수가 없습니다<br>전체 보기로 전환하여 선수를 선택하세요</div>';
                 } else {
                     playerList.innerHTML = '<div class="no-players">검색 결과가 없습니다</div>';
                 }
                 return;
             }
             
+            // 알림 설정된 선수를 상단에 정렬
+            const sortedPlayers = [...filteredPlayers].sort((a, b) => {
+                const keyA = `${a.season}_${a.name}`;
+                const keyB = `${b.season}_${b.name}`;
+                const enabledA = notificationSettings[keyA] || false;
+                const enabledB = notificationSettings[keyB] || false;
+                
+                if (enabledA && !enabledB) return -1;
+                if (!enabledA && enabledB) return 1;
+                return 0;
+            });
+            
             // 원본 배열에서 인덱스 찾기
-            playerList.innerHTML = playersToShow.map((player) => {
+            playerList.innerHTML = sortedPlayers.map((player) => {
                 const originalIndex = players.indexOf(player);
                 const nextUpdate = getNextUpdateTime(player);
                 const isEditing = editingIndex === originalIndex;
+                const key = `${player.season}_${player.name}`;
+                const isEnabled = notificationSettings[key] || false;
                 
                 if (isEditing) {
                     return `
@@ -724,15 +767,24 @@
                     `;
                 } else {
                     return `
-                        <div class="player-item">
-                            <div class="player-info">
-                                <div class="player-name">${player.season} ${player.name}</div>
-                                <div class="player-details">${player.pattern} ${player.minute.toString().padStart(2, '0')}분</div>
-                                <div class="next-update">다음: ${nextUpdate}</div>
-                            </div>
-                            <div class="player-actions">
-                                <button class="edit-btn" onclick="editPlayer(${originalIndex})">수정</button>
-                                <button class="delete-btn" onclick="deletePlayer(${originalIndex})">삭제</button>
+                        <div class="player-item ${isEnabled ? 'notification-enabled' : ''}">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" 
+                                       id="notify-${originalIndex}" 
+                                       ${isEnabled ? 'checked' : ''}
+                                       onchange="toggleNotification(${originalIndex})"
+                                       style="width: 20px; height: 20px; cursor: pointer;">
+                                <div class="player-info" style="flex: 1;">
+                                    <div class="player-name">
+                                        ${isEnabled ? '⭐ ' : ''}${player.season} ${player.name}
+                                    </div>
+                                    <div class="player-details">${player.pattern} ${player.minute.toString().padStart(2, '0')}분</div>
+                                    <div class="next-update">다음: ${nextUpdate}</div>
+                                </div>
+                                <div class="player-actions">
+                                    <button class="edit-btn" onclick="editPlayer(${originalIndex})">수정</button>
+                                    <button class="delete-btn" onclick="deletePlayer(${originalIndex})">삭제</button>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -898,11 +950,47 @@
             });
         }
         
+        // 알림 토글
+        function toggleNotification(index) {
+            const player = players[index];
+            const key = `${player.season}_${player.name}`;
+            notificationSettings[key] = !notificationSettings[key];
+            localStorage.setItem('notificationSettings', JSON.stringify(notificationSettings));
+            displayPlayers();
+        }
+        
+        // 필터 토글
+        function toggleFilter() {
+            showOnlyEnabled = !showOnlyEnabled;
+            const button = document.getElementById('filterToggle');
+            if (showOnlyEnabled) {
+                button.textContent = '📌 알림 설정된 선수만 보기';
+                button.style.background = '#667eea';
+            } else {
+                button.textContent = '📋 전체 선수 보기';
+                button.style.background = '#6c757d';
+            }
+            displayPlayers();
+        }
+        
+        // 알림 카운터 업데이트
+        function updateNotificationCount() {
+            const enabledCount = Object.keys(notificationSettings).filter(key => notificationSettings[key]).length;
+            const totalCount = players.length;
+            document.getElementById('notificationCount').textContent = `알림 활성: ${enabledCount}/${totalCount}명`;
+        }
+        
         // 이적시장 갱신 체크
         function checkTransferUpdate(player) {
             const now = new Date();
             const currentHour = now.getHours();
             const currentMinute = now.getMinutes();
+            
+            // 알림 설정 확인
+            const key = `${player.season}_${player.name}`;
+            if (!notificationSettings[key]) {
+                return; // 알림 OFF면 체크하지 않음
+            }
             
             let shouldAlert = false;
             
@@ -958,9 +1046,9 @@
             // 감독모드 알림이었으면 자동으로 10분 재시작
             const alertMessage = document.getElementById('alertMessage').textContent;
             if (alertMessage.includes('감독모드')) {
-                timeLeft = 600; // 10분 설정
+                timeLeft = 660; // 11분 설정
                 startTimer(); // 자동 시작
-                document.getElementById('status').textContent = '10분 타이머 자동 재시작됨';
+                document.getElementById('status').textContent = '11분 타이머 자동 재시작됨';
             }
         }
         
@@ -989,6 +1077,23 @@
             if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
                 Notification.requestPermission();
             }
+            
+            // all_players.csv 자동 로드
+            loadDefaultCSV();
+        }
+        
+        // 기본 CSV 파일 로드
+        function loadDefaultCSV() {
+            fetch('all_players.csv')
+                .then(response => response.text())
+                .then(csv => {
+                    parseCSV(csv);
+                    console.log(`${players.length}명의 선수 데이터를 로드했습니다.`);
+                })
+                .catch(error => {
+                    console.log('기본 CSV 파일을 찾을 수 없습니다. 빈 목록으로 시작합니다.');
+                    displayPlayers();
+                });
         }
         
         window.onload = init;
