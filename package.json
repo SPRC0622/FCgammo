@@ -1,0 +1,63 @@
+{
+  "name": "fc-online-timer",
+  "version": "1.0.0",
+  "description": "FC온라인 감독모드 & 이적시장 타이머",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build-win": "electron-builder --win",
+    "build": "electron-builder",
+    "dist": "electron-builder --publish=always"
+  },
+  "keywords": ["fc-online", "timer", "supervisor", "transfer-market"],
+  "author": "SPRC0622",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^27.0.0",
+    "electron-builder": "^24.6.4"
+  },
+  "build": {
+    "appId": "com.sprc0622.fcgammo",
+    "productName": "FC온라인 타이머",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "index.html",
+      "preload.js",
+      "icon.ico",
+      "assets/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64", "ia32"]
+        },
+        {
+          "target": "portable"
+        }
+      ],
+      "icon": "icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "language": "1042",
+      "installerIcon": "icon.ico",
+      "uninstallerIcon": "icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "portable": {
+      "artifactName": "FC온라인타이머-portable.exe"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "SPRC0622",
+      "repo": "FCgammo",
+      "releaseType": "release"
+    }
+  }
+}
