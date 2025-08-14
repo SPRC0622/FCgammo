@@ -7,7 +7,7 @@ let isQuitting = false;
 
 // 타이머 상태 저장
 let supervisorTimer = null;
-let supervisorTimeLeft = 600;
+let supervisorTimeLeft = 600; // 10분
 let isTimerRunning = false;
 
 function createWindow() {
@@ -138,7 +138,7 @@ function startSupervisorTimer(minutes) {
   }
   
   if (supervisorTimeLeft <= 0) {
-    supervisorTimeLeft = 600;
+    supervisorTimeLeft = 600; // 10분
   }
   
   isTimerRunning = true;

@@ -1,6 +1,6 @@
 {
   "name": "fc-online-timer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "FC온라인 감독모드 & 이적시장 타이머",
   "main": "main.js",
   "scripts": {

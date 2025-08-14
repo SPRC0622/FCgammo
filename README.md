@@ -2,7 +2,7 @@
 
 > 🎮 FC온라인 감독모드를 잊지 않도록 도와주는 타이머 + 이적시장 갱신 알림
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-1.0.1-blue)
 ![Platform](https://img.shields.io/badge/platform-Windows-lightgrey)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -14,11 +14,11 @@
 
 ## 📥 다운로드
 
-### [👉 최신 버전 다운로드 (v1.0.0)](https://github.com/SPRC0622/FCgammo/releases/latest)
+### [👉 최신 버전 다운로드 (v1.0.1)](https://github.com/SPRC0622/FCgammo/releases/latest)
 
 | 버전 | 파일명 | 용량 | 설명 |
 |------|--------|------|------|
-| 설치 버전 | `FC온라인 타이머 Setup 1.0.0.exe` | ~80MB | 일반 설치 (추천) |
+| 설치 버전 | `FC온라인 타이머 Setup 1.0.1.exe` | ~80MB | 일반 설치 (추천) |
 | 포터블 | `FC온라인타이머-portable.exe` | ~80MB | 설치 없이 실행 |
 
 ### ⚠️ Windows Defender 경고 해결법

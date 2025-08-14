@@ -55,7 +55,8 @@
             text-align: center;
             font-size: 28px;
             font-weight: bold;
-            color: #667eea;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             margin-bottom: 20px;
             font-family: 'Courier New', monospace;
         }
@@ -423,6 +424,14 @@
                     <button class="download-btn" onclick="downloadCSV()">💾 CSV 다운로드</button>
                 </div>
                 
+                <!-- 선수 검색 -->
+                <div style="margin: 20px 0; text-align: center;">
+                    <input type="text" id="playerSearch" placeholder="🔍 선수명 또는 시즌 검색..." 
+                           style="padding: 10px; width: 300px; border-radius: 5px; border: 1px solid #ddd; font-size: 14px;"
+                           onkeyup="searchPlayers()">
+                    <span id="searchCount" style="margin-left: 10px; color: #667eea; font-weight: bold;"></span>
+                </div>
+                
                 <!-- 선수 추가/편집 폼 -->
                 <div class="player-form" id="playerForm">
                     <h3 id="formTitle">새 선수 추가</h3>
@@ -656,33 +665,59 @@
             setupTransferAlerts();
         }
         
+        // 선수 검색
+        function searchPlayers() {
+            const searchTerm = document.getElementById('playerSearch').value.toLowerCase();
+            const filteredPlayers = searchTerm ? 
+                players.filter(player => 
+                    player.name.toLowerCase().includes(searchTerm) || 
+                    player.season.toLowerCase().includes(searchTerm)
+                ) : players;
+            
+            displayPlayers(filteredPlayers);
+            
+            // 검색 결과 수 표시
+            const searchCount = document.getElementById('searchCount');
+            if (searchTerm) {
+                searchCount.textContent = `${filteredPlayers.length}명 찾음`;
+            } else {
+                searchCount.textContent = '';
+            }
+        }
+        
         // 선수 목록 표시
-        function displayPlayers() {
+        function displayPlayers(playersToShow = players) {
             const playerList = document.getElementById('playerList');
             
-            if (players.length === 0) {
-                playerList.innerHTML = '<div class="no-players">선수를 추가하거나 CSV 파일을 업로드하세요</div>';
+            if (playersToShow.length === 0) {
+                if (players.length === 0) {
+                    playerList.innerHTML = '<div class="no-players">선수를 추가하거나 CSV 파일을 업로드하세요</div>';
+                } else {
+                    playerList.innerHTML = '<div class="no-players">검색 결과가 없습니다</div>';
+                }
                 return;
             }
             
-            playerList.innerHTML = players.map((player, index) => {
+            // 원본 배열에서 인덱스 찾기
+            playerList.innerHTML = playersToShow.map((player) => {
+                const originalIndex = players.indexOf(player);
                 const nextUpdate = getNextUpdateTime(player);
-                const isEditing = editingIndex === index;
+                const isEditing = editingIndex === originalIndex;
                 
                 if (isEditing) {
                     return `
                         <div class="player-item editing">
                             <div class="player-info">
-                                <input class="inline-input" value="${player.name}" id="edit-name-${index}">
-                                <input class="inline-input" value="${player.season}" id="edit-season-${index}">
-                                <select class="inline-input" id="edit-pattern-${index}">
+                                <input class="inline-input" value="${player.name}" id="edit-name-${originalIndex}">
+                                <input class="inline-input" value="${player.season}" id="edit-season-${originalIndex}">
+                                <select class="inline-input" id="edit-pattern-${originalIndex}">
                                     <option value="짝수시" ${player.pattern === '짝수시' ? 'selected' : ''}>짝수시</option>
                                     <option value="홀수시" ${player.pattern === '홀수시' ? 'selected' : ''}>홀수시</option>
                                 </select>
-                                <input class="inline-input" type="number" min="0" max="59" value="${player.minute}" id="edit-minute-${index}">
+                                <input class="inline-input" type="number" min="0" max="59" value="${player.minute}" id="edit-minute-${originalIndex}">
                             </div>
                             <div class="player-actions">
-                                <button class="save-btn" onclick="saveEdit(${index})">저장</button>
+                                <button class="save-btn" onclick="saveEdit(${originalIndex})">저장</button>
                                 <button class="cancel-btn" onclick="cancelEdit()">취소</button>
                             </div>
                         </div>
@@ -696,8 +731,8 @@
                                 <div class="next-update">다음: ${nextUpdate}</div>
                             </div>
                             <div class="player-actions">
-                                <button class="edit-btn" onclick="editPlayer(${index})">수정</button>
-                                <button class="delete-btn" onclick="deletePlayer(${index})">삭제</button>
+                                <button class="edit-btn" onclick="editPlayer(${originalIndex})">수정</button>
+                                <button class="delete-btn" onclick="deletePlayer(${originalIndex})">삭제</button>
                             </div>
                         </div>
                     `;
@@ -919,6 +954,14 @@
         function closeAlert() {
             document.getElementById('overlay').style.display = 'none';
             document.getElementById('alertPopup').style.display = 'none';
+            
+            // 감독모드 알림이었으면 자동으로 10분 재시작
+            const alertMessage = document.getElementById('alertMessage').textContent;
+            if (alertMessage.includes('감독모드')) {
+                timeLeft = 600; // 10분 설정
+                startTimer(); // 자동 시작
+                document.getElementById('status').textContent = '10분 타이머 자동 재시작됨';
+            }
         }
         
         // 초기화
