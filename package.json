@@ -42,9 +42,6 @@
             "x64",
             "ia32"
           ]
-        },
-        {
-          "target": "portable"
         }
       ]
     },
@@ -54,9 +51,6 @@
       "language": "1042",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true
-    },
-    "portable": {
-      "artifactName": "FC온라인타이머-portable.exe"
     },
     "publish": {
       "provider": "github",
