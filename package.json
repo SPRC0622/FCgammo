@@ -31,7 +31,8 @@
       "main.js",
       "index.html",
       "preload.js",
-      "assets/**/*"
+      "assets/**/*",
+      "all_players.csv"
     ],
     "win": {
       "icon": "icon.png",
